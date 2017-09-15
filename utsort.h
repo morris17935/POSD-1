@@ -2,6 +2,7 @@
 #define UTSORT_H_INCLUDED
 #include <list>
 #include <algorithm>
+#include <cmath>
 template <class Type>
 void swap (Type &a, Type &b){
     Type temp;
@@ -127,7 +128,7 @@ TEST (Bubble, increasingLambda){
 TEST (Bubble, DecreasingByDistanceToNLambda){
     int a[5]= {5,2,43,6,9};
     int n = 5;
-    bubble (a, 5, [n](int a, int b){return std::(a-n) > std::abs(b-n);});
+    bubble (a, 5, [n](int a, int b){return std::abs(a-n) > std::abs(b-n);});
 
     ASSERT_EQ(43, a[0]);
     ASSERT_EQ(9, a[1]);
