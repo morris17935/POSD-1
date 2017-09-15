@@ -3,6 +3,7 @@
 #include <list>
 #include <algorithm>
 template <class Type>
+using namespace std;
 void swap (Type &a, Type &b){
     Type temp;
     temp = a;
