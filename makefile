@@ -21,4 +21,5 @@ ifeq (${OS}, Windows_NT)
 	del *.o *.exe
 else
 	rm -f *.o hw1
+	rm -f hw1hw1
 endif
