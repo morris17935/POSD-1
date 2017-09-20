@@ -121,7 +121,7 @@ TEST (Sort, sortByIncreasingCompactness) {
 	test.push_back(temp1);
 	test.push_back(temp2);
 	test.push_back(temp3);
-	fortest.sortByIncreasingArea(&test);
+	fortest.sortByIncreasingCompactness(&test);
 	std::list<Shape *>::iterator itertest = test.begin();
 	ASSERT_EQ(0.5, (*(*itertest)).area()/(*(*itertest)).perimeter());
 	itertest++;
