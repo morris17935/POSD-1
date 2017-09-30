@@ -1,4 +1,4 @@
-all: utAtom
+all: hw2
 
 #madRace: mainMadRace.o
 #	g++ -o madRace mainMadRace.o -lgtest -lpthread
