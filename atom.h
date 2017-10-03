@@ -2,8 +2,8 @@
 #define ATOM_H
 
 #include <string>
-
-using std::string;
+#include <sstream>
+using namespace std;
 
 class Atom {
 public:
@@ -14,11 +14,14 @@ public:
 	  {
 		  return compare.match<Atom>(*this);
 	  }
-	  else return value() == compare.value();
+	  else {
+            forcompare << compare.value();
+            return value() == forcompare.str();
+		}
   }
-  bool match(Atom a) {return _symbol == a._symbol;}
   string value() { return _symbol; }
   string _symbol;
+  stringstream forcompare;
   string type;
 };
 

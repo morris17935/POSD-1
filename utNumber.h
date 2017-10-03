@@ -3,40 +3,41 @@
 #include "number.h"
 
 //test Number.value()
+
 TEST (Number,ctor) {
-	Number _25("25",25);
-	ASSERT_EQ("25", _25.value());
+	Number _25(25);
+	ASSERT_EQ(25, _25.value());
 }
 //test Number.symbol()
 TEST (Number, symbol) {
-	Number _25("25", 25);
+	Number _25(25);
 	ASSERT_EQ("25", _25.symbol());
 }
 //?- 25=25.
 //true.
 TEST (Number, matchSuccess) {
-	Number _25("25", 25);
-	Number _25_2("25", 25);
+	Number _25(25);
+	Number _25_2(25);
 	EXPECT_TRUE(_25.match(_25_2));
 }
 //?- 25=0.
 //false.
 TEST (Number, matchFailureDiffValue) {
-	Number _25("25", 25);
-	Number _0("0", 0);
+	Number _25(25);
+	Number _0(0);
 	EXPECT_FALSE(_25.match(_0));
 }
 //?- 25=tom.
 //false.
 TEST (Number, matchFailureDiffConstant) {
-	Number _25("25", 25);
+	Number _25(25);
 	Atom tom("tom");
 	EXPECT_FALSE(_25.match(tom));
 }
 //?- 25=X.
 //true.
 TEST (Number, matchSuccessToVar) {
-	Number _25("25", 25);
+	Number _25(25);
 	Variable X;
 	EXPECT_TRUE(_25.match(X));
 }
@@ -44,7 +45,7 @@ TEST (Number, matchSuccessToVar) {
 //?- tom=25.
 //false.
 TEST (Atom, matchFailureDiffConstant) {
-	Number _25("25", 25);
+	Number _25(25);
 	Atom tom("tom");
 	EXPECT_FALSE(tom.match(_25));
 }
@@ -59,10 +60,11 @@ TEST (Atom, matchSuccessToVar) {
 
 // ?- X=tom, tom=X.
 // X = tom.
+
 TEST (Atom, matchSuccessToVarInstantedToDiffConstant) {
 	Atom tom("tom");
 	Variable X;
-	X.match(tom);
+	EXPECT_TRUE(X.match(tom));
 	EXPECT_TRUE(tom.match(X));
 }
 
@@ -80,7 +82,7 @@ TEST (Atom, matchFailureToVarInstantedToDiffConstant) {
 // X = 5.
 TEST (Var, matchSuccessToNumber) {
 	Variable X;
-	Number _5("5", 5);
+	Number _5(5);
 	EXPECT_TRUE(X.match(_5));
 }
 
@@ -88,8 +90,8 @@ TEST (Var, matchSuccessToNumber) {
 // false.
 TEST (Var, matchFailureToTwoDiffNumbers) {
 	Variable X;
-	Number _25("25", 25);
-	Number _100("100", 100);
+	Number _25(25);
+	Number _100(100);
 	X.match(_25);
 	EXPECT_FALSE(X.match(_100));
 }
@@ -99,7 +101,7 @@ TEST (Var, matchFailureToTwoDiffNumbers) {
 TEST (Var, matchSuccessToAtomThenFailureToNumber) {
 	Variable X;
 	Atom tom("tom");
-	Number _25("25", 25);
+	Number _25(25);
 	X.match(tom);
 	EXPECT_FALSE(X.match(_25));
 
@@ -109,7 +111,7 @@ TEST (Var, matchSuccessToAtomThenFailureToNumber) {
 TEST (Var, matchSuccessToAtomThenFailureToNumber2) {
 	Variable X;
 	Atom tom("tom");
-	Number _25("25", 25);
+	Number _25(25);
 	tom.match(X);
 	EXPECT_FALSE(_25.match(X));
 }

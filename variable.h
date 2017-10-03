@@ -1,9 +1,9 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
-
 #include <string>
 #include <iostream>
 #include <cstdlib>
+#include <sstream>
 #include "atom.h"
 using namespace std;
 
@@ -14,8 +14,10 @@ public:
   string value(){ return _value; }
   template <class Type>
   bool match( Type &compare ){
-    if(ptr == NULL||*ptr == compare.value()){
-      _value = compare.value();
+    forcompare.str("");
+    forcompare << compare.value();
+    if(ptr == NULL||*ptr == forcompare.str()){
+      _value = forcompare.str();
 	  ptr = &_value;
 	  return true;
     }
@@ -26,6 +28,7 @@ public:
 private:
   string*ptr = NULL;
   string _value;
+  stringstream forcompare;
 };
 
 #endif
