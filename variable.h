@@ -9,7 +9,7 @@ using namespace std;
 
 class Variable{
 public:
-	Variable(string s) :_symbol(s) {}
+	Variable(string s) :_symbol(s) {type = "Variable";}
 	Variable() { type = "Variable"; }
   string value(){ return _value; }
   template <class Type>
