@@ -6,7 +6,7 @@ ifeq (${OS}, Windows_NT)
 else
 	g++ -o hw2 mainNumber.o -lgtest -lpthread
 endif
-mainNumber.o: mainNumber.cpp utNumber.h number.h atom.h variable.h
+mainNumber.o: mainNumber.cpp utTerm.h number.h atom.h variable.h
 		g++ -std=gnu++0x -c mainNumber.cpp
 
 clean:

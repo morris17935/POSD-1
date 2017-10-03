@@ -6,7 +6,7 @@
 
 TEST (Number,ctor) {
 	Number _25(25);
-	ASSERT_EQ(25, _25.value());
+	ASSERT_EQ("25", _25.value());
 }
 //test Number.symbol()
 TEST (Number, symbol) {

@@ -20,7 +20,7 @@ public:
 		}
 	}
 	string symbol() { return _symbol; }
-	double value() { return _value; }
+	string value() { return _symbol; }
 	string _symbol;
 	const double _value;
 	stringstream temp;
