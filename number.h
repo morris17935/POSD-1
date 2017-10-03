@@ -9,7 +9,7 @@ using namespace std;
 
 class Number {
 public:
-	Number(double x) : _value(x) { temp << _value; _symbol = temp.str();type = "Number"; }
+	Number(int x) : _value(x) { temp << _value; _symbol = temp.str();type = "Number"; }
 	template <class Type>
 	bool match(Type &compare) {
 		if (compare.type == "Variable")
@@ -22,7 +22,7 @@ public:
 	string symbol() { return _symbol; }
 	string value() { return _symbol; }
 	string _symbol;
-	const double _value;
+	int _value;
 	stringstream temp;
 	stringstream forcompare;
 	string type;
