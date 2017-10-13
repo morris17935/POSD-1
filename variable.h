@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <sstream>
 #include "atom.h"
-#include "Term.h"
+#include "term.h"
 using namespace std;
 
 class Variable : public Term {
@@ -15,8 +15,12 @@ public:
   string value(){ return _value; }
   template <class Type>
   bool match( Type &compare ){
-	  cout << compare.value() + "  111" << endl ;
-	  if (compare.type == "Variable" && compare.value() != "") {
+	  if  (compare.type == "Variable" && compare.value() == "") {
+		  Variable* help = dynamic_cast<Variable*>(&compare);
+		  connect.push_back(help);
+		  help->connect.push_back(this);
+	  }
+	  else if(compare.type == "Variable" || compare.type == "Struct") {
 		forcompare.str("");
 		forcompare << compare.value();
 		if(ptr == NULL||*ptr == forcompare.str()){
@@ -27,10 +31,6 @@ public:
 		}
 			else return false;
 	}
-	  else if (compare.type == "Variable" && compare.value() == "") {
-		  connect.push_back(&compare);
-		  compare.connect.push_back(this);
-	  }
 	  else {
 		  forcompare.str("");
 		  forcompare << compare.symbol();
@@ -47,13 +47,13 @@ public:
   void check(Type &compare){
 	  for (int i = 0; i < connect.size(); i++) {
 		  if (connect[i]->value() == "") {
-			  cout << connect[i]->symbol() << endl;
 			  connect[i]->match(compare);
 		  }
 	  }
   }
 private:
   string*ptr = NULL;
+  vector<Variable *> connect;
 };
 
 #endif

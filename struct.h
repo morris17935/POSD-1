@@ -2,7 +2,7 @@
 #define STRUCT_H
 
 #include "atom.h"
-#include "Term.h"
+#include "term.h"
 #include <vector>
 #include <string>
 
@@ -11,7 +11,7 @@ using namespace std;
 class Struct :public Term
 {
 public:
-	Struct(Atom &name, vector<Term *> &args) : _args(&args), _name(name.symbol()){ type = "Struct"; }
+	Struct(Atom const &name, vector<Term *> &args) : _args(&args), _name(name){ type = "Struct"; }
 
 	template <class Type>
 	bool match(Type &compare) {
@@ -23,11 +23,11 @@ public:
 			return value() == compare.value();
 		}
 	}
-	string name() {
+	Atom name() {
 		return _name;
 	}
 	string symbol() {
-		_symbol = _name + "(";
+		_symbol = _name.symbol() + "(";
 		for (int i = 0; i < (*_args).size(); i++) {
 			_symbol = _symbol + (*_args)[i]->symbol() + ",";
 		}
@@ -35,7 +35,7 @@ public:
 		return _symbol;
 	}
 	string value() {
-		_value = _name + "(";
+		_value = _name.symbol() + "(";
 		for (int i = 0; i < (*_args).size(); i++) {
 			if((*_args)[i]->value() == "")
 				_value =  _value + (*_args)[i]->symbol() + ",";
@@ -46,9 +46,10 @@ public:
 		_value[_value.size() - 1] = ')';
 		return _value;
 	}
+std::vector<Term *> *_args;
 private:
-	string _name;
-	std::vector<Term *> *_args;
+	Atom _name;
+	
 };
 
 #endif

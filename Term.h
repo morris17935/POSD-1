@@ -13,12 +13,11 @@ public:
 
 	virtual string value() { return _value; }
 
-	virtual bool match( Term &fortest) {}
+	bool match( Term &fortest) {}
 	string _symbol;
 	string _value;
 	stringstream temp;
 	stringstream forcompare;
 	string type;
-	vector<Term *> connect;
 };
 #endif

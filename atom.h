@@ -1,12 +1,13 @@
 #ifndef ATOM_H
 #define ATOM_H
 
-#include "Term.h"
+#include "term.h"
 using namespace std;
 
 class Atom : public Term {
 public:
 	Atom(string s){ _symbol = s; type = "Atom"; }
+	Atom(const Atom& temp) { _symbol = temp._symbol; }
 	template <class Type>
 	bool match(Type &compare) {
 		if (compare.type == "Variable")
