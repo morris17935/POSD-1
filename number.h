@@ -1,31 +1,23 @@
 #ifndef NUMBER_H
 #define NUMBER_H
 
-#include <string>
-#include "atom.h"
-#include "variable.h"
-#include <sstream>
+#include "Term.h"
 using namespace std;
 
-class Number {
+class Number : public Term {
 public:
-	Number(int x) : _value(x) { temp << _value; _symbol = temp.str();type = "Number"; }
+	Number(int x) { temp << x; _symbol = temp.str();type = "Number"; }
 	template <class Type>
 	bool match(Type &compare) {
 		if (compare.type == "Variable")
-			{ return compare.match<Number>(*this); }
+		{
+			return compare.match<Number>(*this);
+		}
 		else {
-            forcompare << compare.value();
-            return symbol() == forcompare.str();
+			forcompare << compare.symbol();
+			return symbol() == forcompare.str();
 		}
 	}
-	string symbol() { return _symbol; }
-	string value() { return _symbol; }
-	string _symbol;
-	int _value;
-	stringstream temp;
-	stringstream forcompare;
-	string type;
 };
 
 #endif

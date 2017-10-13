@@ -1,13 +1,11 @@
 #ifndef UTNUMBER_H
 #define UTNUMBER_H
 #include "number.h"
-
+#include "atom.h"
+#include "variable.h"
+#include "struct.h"
+#include <vector>
 //test Number.value()
-
-TEST (Number,ctor) {
-	Number _25(25);
-	ASSERT_EQ("25", _25.value());
-}
 //test Number.symbol()
 TEST (Number, symbol) {
 	Number _25(25);
@@ -122,5 +120,36 @@ TEST(Var, reAssignTheSameAtom){
 	Atom tom("tom");
 	X.match(tom);
 	EXPECT_TRUE(X.match(tom));
+}
+
+
+TEST(Struct, hobby)
+{
+	Atom tom("tom");
+	Atom hobby("hobby");
+	Atom chaseMouse("chaseMouse");
+	std::vector<Term *> v = { &tom, &chaseMouse };
+	Struct test(hobby, v);
+	ASSERT_EQ("hobby", test.name());
+	ASSERT_EQ("hobby(tom,chaseMouse)", test.symbol());
+}
+
+TEST(Struct, second)
+{
+	Atom tom("tom");
+	Atom hobby("hobby");
+	Atom hobby2("hobby2");
+	Atom chaseMouse("chaseMouse");
+	Variable X("X");
+	Variable Y("Y");
+	Variable Z("Z");
+	Variable W("W");
+	X.match(Y);
+	W.match(Y);
+	Y.match(Z);
+	Y.match(chaseMouse);
+	EXPECT_EQ("chaseMouse", Y.value());
+	EXPECT_EQ("chaseMouse", Z.value());
+	EXPECT_EQ("chaseMouse", W.value());
 }
 #endif

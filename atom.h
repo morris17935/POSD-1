@@ -1,28 +1,23 @@
 #ifndef ATOM_H
 #define ATOM_H
 
-#include <string>
-#include <sstream>
+#include "Term.h"
 using namespace std;
 
-class Atom {
+class Atom : public Term {
 public:
-  Atom (string s):_symbol(s) { type = "Atom"; }
-  template <class Type>
-	  bool match(Type &compare) {
-	  if (compare.type == "Variable")
-	  {
-		  return compare.match<Atom>(*this);
-	  }
-	  else {
-            forcompare << compare.value();
-            return value() == forcompare.str();
+	Atom(string s){ _symbol = s; type = "Atom"; }
+	template <class Type>
+	bool match(Type &compare) {
+		if (compare.type == "Variable")
+		{
+			return compare.match<Atom>(*this);
 		}
-  }
-  string value() { return _symbol; }
-  string _symbol;
-  stringstream forcompare;
-  string type;
+		else {
+			forcompare << compare.symbol();
+			return symbol() == forcompare.str();
+		}
+	}
 };
 
 #endif
