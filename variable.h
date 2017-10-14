@@ -13,8 +13,12 @@ public:
 	Variable(string s) { _symbol = s;  type = "Variable"; }
 	Variable() { type = "Variable"; }
   string value(){ 
-	  if(_value != "")
-		return _value; 
+	  if (ptr != NULL) {
+		  if(ptr->type == "Atom" || ptr->type == "Number")
+			return ptr->symbol();
+		  else
+			return ptr->value();
+	  }
 	  else if (trigger != -1) {
 		  return connect[trigger]->_symbol;
 	  }
@@ -26,9 +30,9 @@ public:
 	  if (compare.type == "Atom" || compare.type == "Number"){
 		  forcompare.str("");
 		  forcompare << compare.symbol();
-		  if (ptr == NULL || *ptr == forcompare.str()) {
+		  if (ptr == NULL || value() == forcompare.str()) {
 			  _value = forcompare.str();
-			  ptr = &_value;
+			  ptr = &compare;
 			  check(compare);
 			  return true;
 		  }
@@ -37,9 +41,9 @@ public:
 	  else if(compare.type == "Struct") {
 		forcompare.str("");
 		forcompare << compare.value();
-		if(ptr == NULL||*ptr == forcompare.str()){
+		if(ptr == NULL|| value() == forcompare.str()){
 			 _value = forcompare.str();
-			 ptr = &_value;
+			 ptr = &compare;
 			 check(compare);
 			 return true;
 		}
@@ -49,9 +53,9 @@ public:
 	  if (compare.type == "Variable" && help->ptr !=  NULL) {
 		  forcompare.str("");
 		  forcompare << compare.value();
-		  if (ptr == NULL || *ptr == forcompare.str()) {
+		  if (ptr == NULL || ptr->value() == forcompare.str()) {
 			  _value = forcompare.str();
-			  ptr = &_value;
+			  ptr = &compare;
 			  check(compare);
 			  return true;
 		  }
@@ -73,7 +77,7 @@ public:
   }
   vector<Variable *> connect;
   int trigger = -1;
-  string*ptr = NULL;
+  Term*ptr = NULL;
 };
 
 #endif
