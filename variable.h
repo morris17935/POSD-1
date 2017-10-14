@@ -12,7 +12,12 @@ class Variable : public Term {
 public:
 	Variable(string s) { _symbol = s;  type = "Variable"; }
 	Variable() { type = "Variable"; }
-  string value(){ return _value; }
+  string value(){ 
+	  if(_value != "")
+		return _value; 
+	  else
+		 return _symbol;
+  }
   template <class Type>
   bool match( Type &compare ){
 	  if  (compare.type == "Variable" && compare.value() == "") {
