@@ -15,9 +15,7 @@ public:
   string value(){ 
 	  if(_value != "")
 		return _value; 
-	  else if (connect.size() != 0) {
-		  return connect[connect.size() - 1]->_symbol;
-	  }
+	  
 	  else
 		 return _symbol;
   }
@@ -54,7 +52,7 @@ public:
   template <class Type>
   void check(Type &compare){
 	  for (int i = 0; i < connect.size(); i++) {
-		  if (connect[i]->value() == connect[i]->symbol() || connect[i]->value() == connect[i]->connect[connect[i]->connect.size()-1]->symbol()) {
+		  if (connect[i]->value() == connect[i]->symbol()) {
 			  connect[i]->match(compare);
 		  }
 	  }
