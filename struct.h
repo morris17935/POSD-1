@@ -26,6 +26,10 @@ public:
 	Atom name() {
 		return _name;
 	}
+	Term * args(int index) {
+		return (*_args)[index];
+	}
+
 	string symbol() {
 		_symbol = _name.symbol() + "(";
 		for (int i = 0; i < (*_args).size(); i++) {
