@@ -20,7 +20,7 @@ public:
   }
   template <class Type>
   bool match( Type &compare ){
-	  if  (compare.type == "Variable" && compare.value() == "") {
+	  if  (compare.type == "Variable" && compare.value() == compare.symbol()) {
 		  Variable* help = dynamic_cast<Variable*>(&compare);
 		  connect.push_back(help);
 		  help->connect.push_back(this);
@@ -51,7 +51,7 @@ public:
   template <class Type>
   void check(Type &compare){
 	  for (int i = 0; i < connect.size(); i++) {
-		  if (connect[i]->value() == "") {
+		  if (connect[i]->value() == connect[i]->symbol()) {
 			  connect[i]->match(compare);
 		  }
 	  }
