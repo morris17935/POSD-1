@@ -15,18 +15,26 @@ public:
   string value(){ 
 	  if(_value != "")
 		return _value; 
-	  
+	  else if (trigger != -1) {
+		  return connect[trigger]->_symbol;
+	  }
 	  else
 		 return _symbol;
   }
   template <class Type>
   bool match( Type &compare ){
-	  if  (compare.type == "Variable" && compare.value() == compare.symbol()) {
-		  Variable* help = dynamic_cast<Variable*>(&compare);
-		  connect.push_back(help);
-		  help->connect.push_back(this);
+	  if (compare.type == "Atom" || compare.type == "Number"){
+		  forcompare.str("");
+		  forcompare << compare.symbol();
+		  if (ptr == NULL || *ptr == forcompare.str()) {
+			  _value = forcompare.str();
+			  ptr = &_value;
+			  check(compare);
+			  return true;
+		  }
+		  else return false;
 	  }
-	  else if(compare.type == "Variable" || compare.type == "Struct") {
+	  else if(compare.type == "Struct") {
 		forcompare.str("");
 		forcompare << compare.value();
 		if(ptr == NULL||*ptr == forcompare.str()){
@@ -37,9 +45,10 @@ public:
 		}
 			else return false;
 	}
-	  else {
+	  Variable* help = dynamic_cast<Variable*>(&compare);
+	  if (compare.type == "Variable" && help->ptr !=  NULL) {
 		  forcompare.str("");
-		  forcompare << compare.symbol();
+		  forcompare << compare.value();
 		  if (ptr == NULL || *ptr == forcompare.str()) {
 			  _value = forcompare.str();
 			  ptr = &_value;
@@ -47,18 +56,23 @@ public:
 			  return true;
 		  }
 		  else return false;
-	 }
+	  }
+	  else  {
+		  connect.push_back(help);
+		  help->connect.push_back(this);
+		  trigger = connect.size() - 1;
+	  }
   }
   template <class Type>
   void check(Type &compare){
 	  for (int i = 0; i < connect.size(); i++) {
-		  if (connect[i]->value() == connect[i]->symbol()) {
+		  if (connect[i]->ptr == NULL) {
 			  connect[i]->match(compare);
 		  }
 	  }
   }
   vector<Variable *> connect;
-private:
+  int trigger = -1;
   string*ptr = NULL;
 };
 
