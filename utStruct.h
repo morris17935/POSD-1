@@ -21,7 +21,7 @@ TEST(Struct, symbol)
   Atom chaseMouse("chaseMouse");
   std::vector<Term *> v = {&tom, &chaseMouse};
   Struct hobby(Atom("hobby"), v);
-  ASSERT_EQ("hobby(tom,chaseMouse)",hobby.symbol());
+  ASSERT_EQ("hobby(tom, chaseMouse)",hobby.symbol());
 }
 
 TEST(Struct, match1)
@@ -83,7 +83,7 @@ TEST(Struct, var)
 	Variable X("X");
 	vector<Term *> v = { &_1, &X };
 	Struct plane(point, v);
-	EXPECT_EQ("point(1,X)", plane.value());
+	EXPECT_EQ("point(1, X)", plane.value());
 }
 
 // Given there is Struct s contains a Variable X
@@ -99,8 +99,8 @@ TEST(Struct, var_match_atom)
 	vector<Term *> v = { &_1, &X };
 	Struct plane(point, v);
 	X.match(tom);
-	EXPECT_EQ("point(1,X)", plane.symbol());
-	EXPECT_EQ("point(1,tom)", plane.value());
+	EXPECT_EQ("point(1, X)", plane.symbol());
+	EXPECT_EQ("point(1, tom)", plane.value());
 }
 
 // Given there are Struct s1 and Struct s2
@@ -118,8 +118,8 @@ TEST(Struct, nested_struct1)
 	Struct plane(point, v);
 	vector<Term *> v2 = { &plane, &Y };
 	Struct space(Atom("space"), v2);
-	EXPECT_EQ("space(point(1,X),Y)", space.symbol());
-	EXPECT_EQ("space(point(1,X),Y)", space.value());
+	EXPECT_EQ("space(point(1, X), Y)", space.symbol());
+	EXPECT_EQ("space(point(1, X), Y)", space.value());
 }
 
 // Given there are Struct s1 contains Struct s2
@@ -139,8 +139,8 @@ TEST(Struct, nested_struct2)
 	vector<Term *> v2 = { &plane, &Y };
 	Struct space(Atom("space"), v2);
 	X.match(tom);
-	EXPECT_EQ("space(point(1,X),Y)", space.symbol());
-	EXPECT_EQ("space(point(1,tom),Y)", space.value());
+	EXPECT_EQ("space(point(1, X), Y)", space.symbol());
+	EXPECT_EQ("space(point(1, tom), Y)", space.value());
 }
 
 // Given there are Struct s1 contains Struct s2
@@ -160,8 +160,8 @@ TEST(Struct, nested_struct3)
 	vector<Term *> v2 = { &plane, &Y };
 	Struct space(Atom("space"), v2);
 	X.match(_3_14);
-	EXPECT_EQ("space(point(1,X),Y)", space.symbol());
-	EXPECT_EQ("space(point(1,3.14),Y)", space.value());
+	EXPECT_EQ("space(point(1, X), Y)", space.symbol());
+	EXPECT_EQ("space(point(1, 3.14), Y)", space.value());
 }
 
 // Given there are Struct s1 contains Struct s2 and Variable X
@@ -183,8 +183,8 @@ TEST(Struct, nested_struct_and_multiVariable)
 	Struct space(Atom("space"), v2);
 	Y.match(X);
 	Y.match(kent_beck);
-	EXPECT_EQ("space(point(1,X),Y)", space.symbol());
-	EXPECT_EQ("space(point(1,kent_beck),kent_beck)", space.value());
+	EXPECT_EQ("space(point(1, X), Y)", space.symbol());
+	EXPECT_EQ("space(point(1, kent_beck), kent_beck)", space.value());
 }
 
 #endif

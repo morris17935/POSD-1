@@ -121,7 +121,7 @@ TEST (Variable, Struct1) {
 	Struct plane( point, v);
 	Y.match(plane);
 	EXPECT_EQ("Y", Y.symbol());
-	EXPECT_EQ("point(1,X)", Y.value());
+	EXPECT_EQ("point(1, X)", Y.value());
 }
 
 // Give there is a Struct s contains Variable X
@@ -141,7 +141,7 @@ TEST (Variable, Struct2) {
 	X.match(teddy);
 	Y.match(plane);
 	EXPECT_EQ("Y", Y.symbol());
-	EXPECT_EQ("point(1,teddy)", Y.value());
+	EXPECT_EQ("point(1, teddy)", Y.value());
 }
 
 #endif

@@ -32,22 +32,25 @@ public:
 
 	string symbol() {
 		_symbol = _name.symbol() + "(";
-		for (int i = 0; i < (*_args).size(); i++) {
-			_symbol = _symbol + (*_args)[i]->symbol() + ",";
+		for (int i = 0; i < (*_args).size() - 1; i++) {
+			_symbol = _symbol + (*_args)[i]->symbol() + ", ";
 		}
-		_symbol[_symbol.size() - 1] = ')';
+		_symbol = _symbol + (*_args)[(*_args).size() - 1]->symbol() + ")";
 		return _symbol;
 	}
 	string value() {
 		_value = _name.symbol() + "(";
-		for (int i = 0; i < (*_args).size(); i++) {
+		for (int i = 0; i < (*_args).size() - 1; i++) {
 			if((*_args)[i]->value() == "")
-				_value =  _value + (*_args)[i]->symbol() + ",";
+				_value =  _value + (*_args)[i]->symbol() + ", ";
 			else {
-				_value = _value + (*_args)[i]->value() + ",";
+				_value = _value + (*_args)[i]->value() + ", ";
 			}
 		}
-		_value[_value.size() - 1] = ')';
+		if ((*_args)[(*_args).size() - 1]->value() == "")
+			_value = _value + (*_args)[(*_args).size() - 1]->symbol() + ")";
+		else
+			_value = _value + (*_args)[(*_args).size() - 1]->value() + ")";
 		return _value;
 	}
 std::vector<Term *> *_args;
