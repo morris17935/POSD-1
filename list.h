@@ -70,11 +70,14 @@ public:
 	}
   template <class Type>
   bool match(Type &compare) {
-	  if (compare.type != "List")
+	  if (compare.type == "Variable")
 	  {
-		  return false;
+		  Variable* temp = dynamic_cast<Variable*>(&compare);
+		  return (*temp).match(*this);
 	  }
-	  else {
+	  else if (compare.type != "List")
+		  return false;
+	  else  if (compare.type == "List") {
 		  List* help = dynamic_cast<List*>(&compare);
 		  if (_args.size() == (help->_args).size()) {
 			  for (int i = 0; i < _args.size(); i++){
