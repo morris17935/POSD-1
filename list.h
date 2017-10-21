@@ -8,21 +8,7 @@
 #include "variable.h"
 using std::vector;
 using namespace std;
-class selfException {
-public:
-	selfException() {
-	}
 
-	selfException(string message) : _message(message) {
-	}
-
-	string  message() {
-		return _message;
-	}
-
-protected:
-	string _message;
-};
 class List : public Term {
 public:
 	List(){ type = "List"; }
@@ -114,10 +100,10 @@ public:
 		  if (_args.size() > 0)
 			  return _args[0];
 		  else
-			  throw selfException("Accessing head in an empty list");
+			  throw string("Accessing head in an empty list");
 	  }
 	  else
-		  throw selfException("Accessing head in an empty list");
+		  throw string("Accessing head in an empty list");
   };
   List*  tail()  {
 	  if (_args.size() > 0) {
@@ -127,7 +113,7 @@ public:
 			  return (new List(templating));
 		  }
 	  }
-	  else throw  selfException("Accessing tail in an empty list");
+	  else throw  string("Accessing tail in an empty list");
   };
 	std::vector<Term *> _args;
 };
