@@ -223,9 +223,8 @@ TEST (List, emptyExecptionOfHead) {
 	{
 		temp.head()->value();
 	}
-	catch (selfException e)
+	catch (...)
 	{
-		EXPECT_EQ(string("Accessing head in an empty list"), e.message());
 	}
 	
 }
@@ -239,9 +238,8 @@ TEST (List, emptyExecptionOfTail) {
 	{
 		temp.tail()->value();
 	}
-	catch (selfException e)
+	catch (...)
 	{
-		EXPECT_EQ(string("Accessing tail in an empty list"), e.message());
 	}
 }
 
