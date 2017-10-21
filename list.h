@@ -114,10 +114,10 @@ public:
 		  if (_args.size() > 0)
 			  return _args[0];
 		  else
-			  throw "Accessing head in an empty list";
+			  throw selfException("Accessing head in an empty list");
 	  }
 	  else
-		  throw "Accessing head in an empty list";
+		  throw selfException("Accessing head in an empty list");
   };
   List*  tail()  {
 	  if (_args.size() > 0) {
@@ -127,7 +127,7 @@ public:
 			  return (new List(templating));
 		  }
 	  }
-	  else throw  "Accessing tail in an empty list";
+	  else throw  selfException("Accessing tail in an empty list");
   };
 	std::vector<Term *> _args;
 };
