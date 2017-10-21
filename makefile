@@ -1,17 +1,17 @@
-all: hw3
+all: hw4
 
-hw3: MainNumber.o
+hw4: MainNumber.o
 ifeq (${OS}, Windows_NT)
-	g++ -o hw3 MainNumber.o -lgtest 
+	g++ -o hw4 MainNumber.o -lgtest 
 else
-	g++ -o hw3 MainNumber.o -lgtest -lpthread
+	g++ -o hw4 MainNumber.o -lgtest -lpthread
 endif
-MainNumber.o: MainNumber.cpp  number.h atom.h variable.h struct.h term.h
+MainNumber.o: MainNumber.cpp  number.h atom.h variable.h struct.h list.h term.h 
 		g++ -std=gnu++0x -c MainNumber.cpp
 
 clean:
 ifeq (${OS}, Windows_NT)
 	del *.o *.exe
 else
-	rm -f *.o hw3
+	rm -f *.o hw4
 endif

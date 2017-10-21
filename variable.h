@@ -38,10 +38,12 @@ public:
 		  }
 		  else return false;
 	  }
-	  else if(compare.type == "Struct") {
+	  else if(compare.type == "Struct"|| compare.type == "List") {
 		forcompare.str("");
 		forcompare << compare.value();
-		if(ptr == NULL|| value() == forcompare.str()){
+		if (int(compare.symbol().find(symbol())) >= 0)
+			return false;
+		else if(ptr == NULL|| value() == forcompare.str()){
 			 _value = forcompare.str();
 			 ptr = &compare;
 			 check(compare);
@@ -65,6 +67,7 @@ public:
 		  connect.push_back(help);
 		  help->connect.push_back(this);
 		  trigger = connect.size() - 1;
+		  return true;
 	  }
   }
   template <class Type>

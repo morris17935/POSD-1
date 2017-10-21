@@ -18,6 +18,11 @@ public:
 			return symbol() == forcompare.str();
 		}
 	}
+	string value() {
+		if (_value != "")
+			return _value;
+		else return symbol();
+	}
 };
 
 #endif
