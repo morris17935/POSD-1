@@ -35,6 +35,7 @@ TEST_F(ParserTest, createTerm_Atom)
 	ASSERT_EQ("tom", parser.createTerm()->symbol());
 }
 
+
 TEST_F(ParserTest, createArgs)
 {
 	Scanner scanner("1, X, tom");
