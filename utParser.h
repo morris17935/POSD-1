@@ -165,9 +165,10 @@ TEST_F(ParserTest, parseListOfLists) {
 // Then it should return a List.
 // And #symbol() of List should return "[[1], [], s(s(1))]".
 TEST_F(ParserTest, parseListOfListsAndStruct) {
-	Scanner scanner("   [  [1], [], s(s(1)) ]   ");
+	Scanner scanner("   [  [1], [], s(s(1)) ] ");
 	Parser parser(scanner);
 	vector<Term*> terms = parser.getArgs();
+	ASSERT_EQ(1, terms.size());
 	ASSERT_EQ("[[1], [], s(s(1))]", terms[0]->symbol());
 }
 
@@ -210,8 +211,8 @@ TEST_F(ParserTest, ListAsStruct) {
 	vector<Term*> terms = parser.getArgs();
 	ASSERT_EQ(".(1, [])", terms[0]->symbol());
 	ASSERT_EQ(2, dynamic_cast<Struct*>(terms[0])->arity());
-	ASSERT_EQ("1", dynamic_cast<Struct*>(terms[0])->args(0)->symbol());
-	ASSERT_EQ("[]", dynamic_cast<Struct*>(terms[0])->args(1)->symbol());
+	ASSERT_EQ("1", dynamic_cast<Number*>(((Struct*)terms[0])->args(0))->symbol());
+	ASSERT_EQ("[]", dynamic_cast<List*>(((Struct*)terms[0])->args(1))->symbol());
 }
 
 
@@ -228,7 +229,7 @@ TEST_F(ParserTest, ListAsStruct2) {
 	ASSERT_EQ(".(2, .(1, []))", terms[0]->symbol());
 	ASSERT_EQ(2, dynamic_cast<Struct*>(terms[0])->arity());
 	ASSERT_EQ("2",  dynamic_cast<Number*>(((Struct*)terms[0])->args(0))->symbol());
-	ASSERT_EQ(".(1, [])", dynamic_cast<Struct*>(terms[0])->args(1)->symbol());
+	ASSERT_EQ(".(1, [])", dynamic_cast<Struct*>(((Struct*)terms[0])->args(1))->symbol());
 }
 
 
@@ -305,5 +306,4 @@ TEST_F(ParserTest, parseStructOneArg) {
 	vector<Term*> terms = parser.getArgs();
 	ASSERT_EQ("point(11)", terms[0]->symbol());
 }
-
 #endif
