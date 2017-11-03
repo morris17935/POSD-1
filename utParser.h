@@ -230,7 +230,6 @@ TEST_F(ParserTest, ListAsStruct2) {
 }
 
 
-
 // Given there is string: "s(s(s(s(1)))), b(1,2,3)" in scanner.
 // When parser parses all terms via scanner.
 // Then it should return two Struct.
