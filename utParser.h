@@ -15,6 +15,7 @@ protected:
 	}
 };
 
+
 TEST_F(ParserTest, createTerm_Var) {
 	Scanner scanner("X");
 	Parser parser(scanner);
