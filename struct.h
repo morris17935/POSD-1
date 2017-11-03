@@ -26,8 +26,8 @@ public:
 	Atom name() {
 		return _name;
 	}
-	Term & args(int index) {
-		return *_args[index];
+	Term * args(int index) {
+		return _args[index];
 	}
 
 	string symbol() {

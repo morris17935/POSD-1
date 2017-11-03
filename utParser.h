@@ -210,8 +210,8 @@ TEST_F(ParserTest, ListAsStruct) {
 	vector<Term*> terms = parser.getArgs();
 	ASSERT_EQ(".(1, [])", terms[0]->symbol());
 	ASSERT_EQ(2, dynamic_cast<Struct*>(terms[0])->arity());
-	ASSERT_EQ("1", dynamic_cast<Struct*>(terms[0])->args(0).symbol());
-	ASSERT_EQ("[]", dynamic_cast<Struct*>(terms[0])->args(1).symbol());
+	ASSERT_EQ("1", dynamic_cast<Struct*>(terms[0])->args(0)->symbol());
+	ASSERT_EQ("[]", dynamic_cast<Struct*>(terms[0])->args(1)->symbol());
 }
 
 
@@ -227,8 +227,8 @@ TEST_F(ParserTest, ListAsStruct2) {
 	vector<Term*> terms = parser.getArgs();
 	ASSERT_EQ(".(2, .(1, []))", terms[0]->symbol());
 	ASSERT_EQ(2, dynamic_cast<Struct*>(terms[0])->arity());
-	ASSERT_EQ("2", dynamic_cast<Struct*>(terms[0])->args(0).symbol());
-	ASSERT_EQ(".(1, [])", dynamic_cast<Struct*>(terms[0])->args(1).symbol());
+	ASSERT_EQ("2",  dynamic_cast<Number*>(((Struct*)terms[0])->args(0))->symbol());
+	ASSERT_EQ(".(1, [])", dynamic_cast<Struct*>(terms[0])->args(1)->symbol());
 }
 
 
