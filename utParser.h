@@ -40,7 +40,7 @@ TEST_F(ParserTest, createArgs)
 {
 	Scanner scanner("1, X, tom");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("1", terms[0]->symbol());
 	ASSERT_EQ("X", terms[1]->symbol());
 	ASSERT_EQ("tom", terms[2]->symbol());
@@ -60,7 +60,7 @@ TEST_F(ParserTest, createTerms)
 TEST_F(ParserTest, listOfTermsTwo) {
 	Scanner scanner(" 12345,  tom");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("12345", terms[0]->symbol());
 	ASSERT_EQ("tom", terms[1]->symbol());
 }
@@ -73,7 +73,7 @@ TEST_F(ParserTest, listOfTermsTwo) {
 TEST_F(ParserTest, parseStructOfStruct) {
 	Scanner scanner("point(1, X, z(1,2,3))");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("point(1, X, z(1, 2, 3))", terms[0]->symbol());
 }
 
@@ -84,7 +84,7 @@ TEST_F(ParserTest, parseStructOfStruct) {
 TEST_F(ParserTest, listOfTermsTwoNumbers) {
 	Scanner scanner(" 12345,  67");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("12345", terms[0]->symbol());
 	ASSERT_EQ("67", terms[1]->symbol());
 }
@@ -97,7 +97,7 @@ TEST_F(ParserTest, listOfTermsTwoNumbers) {
 TEST_F(ParserTest, parseStructThreeArgs) {
 	Scanner scanner("point(1, X, z)");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("point(1, X, z)", terms[0]->symbol());
 }
 
@@ -109,7 +109,7 @@ TEST_F(ParserTest, parseStructThreeArgs) {
 TEST_F(ParserTest, parseListEmpty) {
 	Scanner scanner("   [   ]");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("[]", terms[0]->symbol());
 }
 
@@ -120,7 +120,7 @@ TEST_F(ParserTest, parseListEmpty) {
 TEST_F(ParserTest, parseVar) {
 	Scanner scanner("_date");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("_date", terms[0]->symbol());
 }
 
@@ -131,7 +131,7 @@ TEST_F(ParserTest, parseVar) {
 TEST_F(ParserTest, listOfTermsEmpty) {
 	Scanner scanner;
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ(0, terms.size());
 }
 
@@ -143,7 +143,7 @@ TEST_F(ParserTest, listOfTermsEmpty) {
 TEST_F(ParserTest, parseStructOfStructAllTheWay) {
 	Scanner scanner("s(s(s(s(1))))");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("s(s(s(s(1))))", terms[0]->symbol());
 }
 
@@ -155,7 +155,7 @@ TEST_F(ParserTest, parseStructOfStructAllTheWay) {
 TEST_F(ParserTest, parseListOfLists) {
 	Scanner scanner("   [  [1], [] ]");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("[[1], []]", terms[0]->symbol());
 }
 
@@ -167,7 +167,7 @@ TEST_F(ParserTest, parseListOfLists) {
 TEST_F(ParserTest, parseListOfListsAndStruct) {
 	Scanner scanner("   [  [1], [], s(s(1)) ] ");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ(1, terms.size());
 	ASSERT_EQ("[[1], [], s(s(1))]", terms[0]->symbol());
 }
@@ -179,7 +179,7 @@ TEST_F(ParserTest, parseListOfListsAndStruct) {
 TEST_F(ParserTest, parseList) {
 	Scanner scanner("   [1, 2]");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("[1, 2]", terms[0]->symbol());
 }
 
@@ -191,7 +191,7 @@ TEST_F(ParserTest, illegal1) {
 	Parser parser(scanner);
 	try
 	{
-		vector<Term*> terms = parser.getArgs();
+		vector<Term*> terms = parser.getterms();
 	}
 	catch (string e)
 	{
@@ -208,7 +208,7 @@ TEST_F(ParserTest, illegal1) {
 TEST_F(ParserTest, ListAsStruct) {
 	Scanner scanner(".(1,[])");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ(".(1, [])", terms[0]->symbol());
 	ASSERT_EQ(2, dynamic_cast<Struct*>(terms[0])->arity());
 	ASSERT_EQ("1", dynamic_cast<Number*>(((Struct*)terms[0])->args(0))->symbol());
@@ -225,7 +225,7 @@ TEST_F(ParserTest, ListAsStruct) {
 TEST_F(ParserTest, ListAsStruct2) {
 	Scanner scanner(".(2,.(1,[]))");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ(".(2, .(1, []))", terms[0]->symbol());
 	ASSERT_EQ(2, dynamic_cast<Struct*>(terms[0])->arity());
 	ASSERT_EQ("2",  dynamic_cast<Number*>(((Struct*)terms[0])->args(0))->symbol());
@@ -241,7 +241,7 @@ TEST_F(ParserTest, ListAsStruct2) {
 TEST_F(ParserTest, parseStructOfStructAllTheWay2) {
 	Scanner scanner("s(s(s(s(1)))), b(1,2,3)");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("s(s(s(s(1))))", terms[0]->symbol());
 	ASSERT_EQ("b(1, 2, 3)", terms[1]->symbol());
 }
@@ -254,7 +254,7 @@ TEST_F(ParserTest, parseStructOfStructAllTheWay2) {
 TEST_F(ParserTest, parseStructNoArg) {
 	Scanner scanner("point()");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("point()", terms[0]->symbol());
 }
 
@@ -265,7 +265,7 @@ TEST_F(ParserTest, parseStructNoArg) {
 TEST_F(ParserTest, listOfTermsThree) {
 	Scanner scanner(" 12345,  tom,   Date");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("12345", terms[0]->symbol());
 	ASSERT_EQ("tom", terms[1]->symbol());
 	ASSERT_EQ("Date", terms[2]->symbol());
@@ -279,7 +279,7 @@ TEST_F(ParserTest, listOfTermsThree) {
 TEST_F(ParserTest, parseStructTwoArgs) {
 	Scanner scanner("point(11,12)");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("point(11, 12)", terms[0]->symbol());
 }
 
@@ -291,7 +291,7 @@ TEST_F(ParserTest, parseStructTwoArgs) {
 TEST_F(ParserTest, parseStructDOTSTwoArgs) {
 	Scanner scanner("...(11,12)");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("...(11, 12)", terms[0]->symbol());
 }
 
@@ -303,7 +303,15 @@ TEST_F(ParserTest, parseStructDOTSTwoArgs) {
 TEST_F(ParserTest, parseStructOneArg) {
 	Scanner scanner("point(11)");
 	Parser parser(scanner);
-	vector<Term*> terms = parser.getArgs();
+	vector<Term*> terms = parser.getterms();
 	ASSERT_EQ("point(11)", terms[0]->symbol());
+}
+
+TEST_F(ParserTest, parseStructOneArg2) {
+	Scanner scanner("point(11),15");
+	Parser parser(scanner);
+	vector<Term*> terms = parser.getterms();
+	vector<Term*> terms2 = parser.expressiontree();
+	ASSERT_EQ("15", terms2[0]->symbol());
 }
 #endif

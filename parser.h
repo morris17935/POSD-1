@@ -12,10 +12,12 @@ using std::string;
 #include "scanner.h"
 #include <sstream>
 #include <iostream>
+using namespace std;
 class Parser{
 public:
   Parser(Scanner scanner) : _scanner(scanner){}
-  vector<Term*> args;
+  vector<Term*> terms;
+  vector<Term*> reverseterms;
   Term* createTerm(){
     string token = _scanner.nextToken();
     if(token != "Error"){
@@ -55,17 +57,23 @@ public:
           return new List(temp);
         }
     }
-
     return NULL;
   }
-  vector<Term*> getArgs()
+  vector<Term*> expressiontree(){
+	for(Term* temp : terms){
+		 vector<Term*>::iterator it = reverseterms.begin();
+		 reverseterms.insert(it,temp);
+	}
+	return reverseterms;
+  }
+  vector<Term*> getterms()
   {
 	  while (_scanner.buffersize() > _scanner.position()) {
 		  Term*wanttopush = createTerm();
 		  if (wanttopush != NULL)
-            args.push_back(wanttopush);
+            terms.push_back(wanttopush);
 	  }
-	  return args;
+	  return terms;
   }
 private:
   Scanner _scanner;
