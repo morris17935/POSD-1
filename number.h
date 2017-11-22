@@ -2,6 +2,7 @@
 #define NUMBER_H
 
 #include "term.h"
+#include "variable.h"
 using namespace std;
 
 class Number : public Term {
@@ -11,7 +12,7 @@ public:
 	bool match(Type &compare) {
 		if (compare.type == "Variable")
 		{
-			return compare.match<Number>(*this);
+			return (dynamic_cast<Variable*>(&compare))->match<Number>(*this);
 		}
 		else {
 			forcompare << compare.symbol();

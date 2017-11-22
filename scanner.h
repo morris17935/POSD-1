@@ -109,9 +109,9 @@ string lookforward() {
   int buffersize() {
 	  return buffer.size();
   }
+  int pos;
 private:
   string buffer;
-  int pos;
 };
 
 

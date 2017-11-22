@@ -63,6 +63,13 @@ public:
 		  }
 		  else return false;
 	  }
+	  else if (compare.type == "Variable" && help->ptr == NULL&& ptr != NULL) {
+		  connect.push_back(help);
+		  help->connect.push_back(this);
+		  trigger = connect.size() - 1;
+		  help->ptr = ptr;
+		  return true;
+	  }
 	  else  {
 		  connect.push_back(help);
 		  help->connect.push_back(this);
