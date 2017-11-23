@@ -15,7 +15,7 @@ protected:
 	}
 };
 
-/*
+
 TEST_F(ParserTest, createTerm_Var) {
 	Scanner scanner("X");
 	Parser parser(scanner);
@@ -199,7 +199,7 @@ TEST_F(ParserTest, createTerm_ListAsStruct2) {
 	Struct * s = dynamic_cast<Struct *>(((Struct *)term)->args(1));
 	EXPECT_EQ(".(1, [])", s->symbol());
 }
-*/
+
 TEST_F(ParserTest, OneMatching) {
 	Scanner scanner("X = 1.");
 	Parser parser(scanner);

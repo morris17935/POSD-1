@@ -36,8 +36,7 @@ public:
 				return (dynamic_cast<Atom*>(current->left->term))->match(*(current->right->term));
 			else if (current->left->term->type == "Number")
 				return (dynamic_cast<Number*>(current->left->term))->match(*(current->right->term));
-		}
-			
+		}		
 		else if (current->payload == COMMA) {
 			if (!visit(current->right))
 				final_answer = false;
@@ -45,7 +44,11 @@ public:
 		}
 		else if (current->payload == SEMICOLON) {
 			final_answer = true;
-			forreset.assign(readyforreset.begin(),readyforreset.end());
+			for (Term* temp : readyforreset) {
+				for (Variable* temp2 : dynamic_cast<Variable*>(temp)->connect) {
+					temp2->ptr = NULL;
+				}
+			}
 			readyforreset.clear();
 			if (!visit(current->right))
 				final_answer = false;
@@ -54,13 +57,8 @@ public:
 		else if (current->payload == TERM){
 			if(current->term->type == "Variable")
 				readyforreset.push_back(current->term);
-			for(Term* temp : forreset){
-				if(temp->symbol() == current->term->symbol()){
-					dynamic_cast<Variable*>(current->term)->ptr = NULL;
-				}
-			}
 			return true;
 		}
-	};
+	}
 };
 #endif
