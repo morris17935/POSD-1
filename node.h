@@ -12,6 +12,8 @@ public:
 	Node* left = nullptr;
 	Node* right = nullptr;
 	Term*term = nullptr;;
+	vector<Term*> readyforreset;
+	vector<Term*> forreset;
 	int counter = 1;
 	Operators payload;
 	bool evaluate() {
@@ -43,12 +45,22 @@ public:
 		}
 		else if (current->payload == SEMICOLON) {
 			final_answer = true;
+			forreset.assign(readyforreset.begin(),readyforreset.end());
+			readyforreset.clear();
 			if (!visit(current->right))
 				final_answer = false;
 			return final_answer;
 		}
-		else if (current->payload == TERM)
+		else if (current->payload == TERM){
+			if(current->term->type == "Variable")
+				readyforreset.push_back(current->term);
+			for(Term* temp : forreset){
+				if(temp->symbol() == current->term->symbol()){
+					dynamic_cast<Variable*>(current->term)->ptr = NULL;
+				}
+			}
 			return true;
+		}
 	};
 };
 #endif

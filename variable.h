@@ -57,7 +57,7 @@ public:
 		  forcompare << compare.value();
 		  if (ptr == NULL || ptr->value() == forcompare.str()) {
 			  _value = forcompare.str();
-			  ptr = &compare;
+			  ptr = help -> ptr;
 			  check(compare);
 			  return true;
 		  }
