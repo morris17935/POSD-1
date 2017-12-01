@@ -3,21 +3,24 @@
 
 #include <string>
 #include <sstream>
-using namespace std;
 
-
-class Term {
-
+using std::string;
+class Iterator;
+class Term{
 public:
-	virtual string symbol() { return _symbol; }
-
-	virtual string value() { return _value; }
-
-	bool match( Term &fortest) {}
-	string _symbol;
-	string _value;
-	stringstream temp;
-	stringstream forcompare;
-	string type;
+  virtual string symbol() const {return _symbol;}
+  virtual string value() const {return symbol();}
+  virtual Iterator * createIterator();
+  virtual bool match(Term & a);
+protected:
+  Term ():_symbol(""){}
+  Term (string s):_symbol(s) {}
+  Term(double db){
+    std::ostringstream strs;
+    strs << db;
+    _symbol = strs.str();
+  }
+  string _symbol;
 };
+
 #endif
