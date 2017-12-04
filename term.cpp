@@ -9,6 +9,6 @@ bool Term::match(Term & a){
   else
     return symbol() == a.symbol();
 }
-Iterator * Term::createIterator() {
-	return new NullIterator(this);
+Iterator <Term*>* Term::createIterator() {
+	return new NullIterator<Term*>(this);
 }

@@ -86,17 +86,17 @@ List * List::tail() const {
     List *ls= new List(_clone_elements) ;
     return ls;
 }
-Iterator * List::createIterator()
+Iterator<Term*> * List::createIterator()
 {
-	return new ListIterator(this);
+	return new ListIterator<Term*>(this);
 }
 
-Iterator * List::createDFSIterator()
+Iterator<Term*> * List::createDFSIterator()
 {
-	return new DFSIterator<List>(this);
+	return new DFSIterator<Term*>(this);
 }
 
-Iterator * List::createBFSIterator()
+Iterator<Term*> * List::createBFSIterator()
 {
-	return new BFSIterator<List>(this);
+	return new BFSIterator<Term*>(this);
 }

@@ -5,12 +5,13 @@
 #include <sstream>
 
 using std::string;
+template <class Type>
 class Iterator;
 class Term{
 public:
   virtual string symbol() const {return _symbol;}
   virtual string value() const {return symbol();}
-  virtual Iterator * createIterator();
+  virtual Iterator<Term*> * createIterator();
   virtual bool match(Term & a);
 protected:
   Term ():_symbol(""){}

@@ -3,7 +3,7 @@
 
 #include "struct.h"
 #include "list.h"
-
+template <class Type>
 class Iterator {
 public:
 	virtual void first() = 0;
@@ -12,8 +12,8 @@ public:
 	virtual bool isDone() const = 0;
 	virtual Term* the_term_that_itr_ptr() = 0;
 };
-
-class NullIterator :public Iterator {
+template <class Type>
+class NullIterator :public Iterator<Type> {
 public:
 	NullIterator(Term *n) : temp(n) {}
 	void first() {}
@@ -29,8 +29,8 @@ public:
 	};
 	Term* temp;
 };
-
-class StructIterator :public Iterator {
+template <class Type>
+class StructIterator :public Iterator<Type>{
 public:
 	friend class Struct;
 	void first() {
@@ -56,8 +56,8 @@ private:
 	int _index;
 	Struct* _s;
 };
-
-class ListIterator :public Iterator {
+template <class Type>
+class ListIterator :public Iterator<Type> {
 public:
 	friend class List;
 
@@ -85,7 +85,7 @@ private:
 	List* _list;
 };
 template <class Type>
-class DFSIterator :public Iterator {
+class DFSIterator :public Iterator<Type> {
 public:
 	friend class List;
 	friend class Struct;
@@ -109,14 +109,14 @@ public:
 			while(dfsstack.size() > 0 && dfsstack[dfsstack.size() - 1]->isDone())
 				dfsstack.pop_back();
 			if (dfsstack.size() > 0) {
-				Iterator*temp = dfsstack[dfsstack.size() - 1]->currentItem()->createIterator();
+				Iterator<Term*>*temp = dfsstack[dfsstack.size() - 1]->currentItem()->createIterator();
 				dfsstack[dfsstack.size() - 1]->next();
 				temp->first();
 				dfsstack.push_back(temp);
 			}
 		}
 		else if(! dfsstack[dfsstack.size()-1]->isDone()){
-			Iterator*temp = dfsstack[dfsstack.size() - 1] ->currentItem()->createIterator();
+			Iterator<Term*>*temp = dfsstack[dfsstack.size() - 1] ->currentItem()->createIterator();
 			dfsstack[dfsstack.size() - 1]->next();
 			temp->first();
 			dfsstack.push_back(temp);
@@ -126,18 +126,18 @@ public:
 		return ptr;
 	};
 private:
-	DFSIterator(Type *tempptr) : _index(0), ptr(tempptr) { 
-		Iterator*temp = ptr->createIterator();
+	DFSIterator(Type tempptr) : _index(0), ptr(tempptr) { 
+		Iterator<Term*>*temp = ptr->createIterator();
 		temp->first();
 		dfsstack.push_back(temp);
 	}
 	int _index;
-	Type* ptr;
-	vector<Iterator*>dfsstack;
+	Type ptr;
+	vector<Iterator<Term*>*>dfsstack;
 };
 
 template <class Type>
-class BFSIterator :public Iterator {
+class BFSIterator :public Iterator<Type> {
 public:
 	friend class List;
 	friend class Struct;
@@ -159,10 +159,10 @@ public:
 	void next() {
 		if (bfsstack.size() > 0) {
 			while (!bfsstack[bfsstack.size() - 1]->isDone()) {
-				Iterator*temp = bfsstack[bfsstack.size() - 1]->currentItem()->createIterator();
+				Iterator<Term*>*temp = bfsstack[bfsstack.size() - 1]->currentItem()->createIterator();
 				bfsstack[bfsstack.size() - 1]->next();
 				temp->first();
-				vector<Iterator*>::iterator it = bfsstack.begin();
+				vector<Iterator<Term*>*>::iterator it = bfsstack.begin();
 				bfsstack.insert(it, temp);
 			}
 			bfsstack.pop_back();
@@ -172,13 +172,13 @@ public:
 		return ptr;
 	};
 private:
-	BFSIterator(Type *tempptr) : _index(0), ptr(tempptr) {
-		Iterator*temp = ptr->createIterator();
+	BFSIterator(Type tempptr) : _index(0), ptr(tempptr) {
+		Iterator<Term*>*temp = ptr->createIterator();
 		temp->first();
 		bfsstack.push_back(temp);
 	}
 	int _index;
-	Type* ptr;
-	vector<Iterator*>bfsstack;
+	Type ptr;
+	vector<Iterator<Term*>*>bfsstack;
 };
 #endif
