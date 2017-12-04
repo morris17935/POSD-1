@@ -19,7 +19,7 @@ public:
 	void first() {}
 	void next() {}
 	Term * currentItem() const {
-		return nullptr;
+		return temp;
 	}
 	bool isDone() const {
 		return true;
@@ -90,7 +90,7 @@ public:
 	friend class List;
 	friend class Struct;
 	void first() {
-		_index = 0;
+		next();
 	}
 
 	Term* currentItem() const {
@@ -122,7 +122,7 @@ public:
 			dfsstack.push_back(temp);
 		}
 	}
-	Term* the_term_that_itr_ptr() {
+	Term* the_term_that_itr_ptr() { 
 		return ptr;
 	};
 private:
@@ -142,7 +142,7 @@ public:
 	friend class List;
 	friend class Struct;
 	void first() {
-		_index = 0;
+		next();
 	}
 
 	Term* currentItem() const {
@@ -168,7 +168,7 @@ public:
 			bfsstack.pop_back();
 		}
 	}
-	Term* the_term_that_itr_ptr() {
+	Term* the_term_that_itr_ptr() { 
 		return ptr;
 	};
 private:
