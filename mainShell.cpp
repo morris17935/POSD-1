@@ -30,7 +30,7 @@ int main(int argc, char **argv)
               p.buildExpression();
               cout<<result<<endl<<"?- ";
             } catch (std::string & msg) {
-              cout << msg;
+              cout << msg<<endl<<"?- ";
             }
             allcin="";
         }
