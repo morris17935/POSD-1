@@ -7,7 +7,7 @@ using std::pair;
 
 #include <string>
 using std::string;
-
+string result;
 const int NONE = -1; // no tokenValue
 
 // tokens return by the scanner

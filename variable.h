@@ -1,41 +1,93 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
-
 #include <string>
+#include <iostream>
+#include <cstdlib>
+#include <sstream>
+#include "atom.h"
 #include "term.h"
-#include "list.h"
-#include <typeinfo>
-
-using std::string;
+using namespace std;
 
 class Variable : public Term {
 public:
-  Variable(string s):Term(s), _inst(0){}
-  string value() const {
-    if (_inst)
-      return _inst->value();
-    else
-      return Term::value();
+	Variable(string s) { _symbol = s;  type = "Variable"; }
+	Variable() { type = "Variable"; }
+  string value(){ 
+	  if (ptr != NULL) {
+		  if(ptr->type == "Atom" || ptr->type == "Number")
+			return ptr->symbol();
+		  else
+			return ptr->value();
+	  }
+	  else if (trigger != -1) {
+		  return connect[trigger]->_symbol;
+	  }
+	  else
+		 return _symbol;
   }
-  bool match( Term & term ){
-    bool ret = true;
-    if (this == &term)
-      return ret;
-    if(!_inst){      
-      if (typeid(term) ==  typeid(List)){
-        List * ls= dynamic_cast<List*>(&term);
-         std::cout << "Variable_List:"+ls->symbol()<< std::endl;
-         ret =  ls->match(*this);
-        _inst = &term ;
-        return ret;
-      }
-      _inst = &term ;
-      return ret;
-    }
-    return _inst->match(term);
+  template <class Type>
+  bool match( Type &compare ){
+	  if (compare.type == "Atom" || compare.type == "Number"){
+		  forcompare.str("");
+		  forcompare << compare.symbol();
+		  if (ptr == NULL || value() == forcompare.str()) {
+			  _value = forcompare.str();
+			  ptr = &compare;
+			  check(compare);
+			  return true;
+		  }
+		  else return false;
+	  }
+	  else if(compare.type == "Struct"|| compare.type == "List") {
+		forcompare.str("");
+		forcompare << compare.value();
+		if (int(compare.symbol().find(symbol())) >= 0)
+			return false;
+		else if(ptr == NULL|| value() == forcompare.str()){
+			 _value = forcompare.str();
+			 ptr = &compare;
+			 check(compare);
+			 return true;
+		}
+			else return false;
+	}
+	  Variable* help = dynamic_cast<Variable*>(&compare);
+	  if (compare.type == "Variable" && help->ptr !=  NULL) {
+		  forcompare.str("");
+		  forcompare << compare.value();
+		  if (ptr == NULL || ptr->value() == forcompare.str()) {
+			  _value = forcompare.str();
+			  ptr = help -> ptr;
+			  check(compare);
+			  return true;
+		  }
+		  else return false;
+	  }
+	  else if (compare.type == "Variable" && help->ptr == NULL&& ptr != NULL) {
+		  connect.push_back(help);
+		  help->connect.push_back(this);
+		  trigger = connect.size() - 1;
+		  help->ptr = ptr;
+		  return true;
+	  }
+	  else  {
+		  connect.push_back(help);
+		  help->connect.push_back(this);
+		  trigger = connect.size() - 1;
+		  return true;
+	  }
   }
-private:
-  Term * _inst;
+  template <class Type>
+  void check(Type &compare){
+	  for (int i = 0; i < connect.size(); i++) {
+		  if (connect[i]->ptr == NULL) {
+			  connect[i]->match(compare);
+		  }
+	  }
+  }
+  vector<Variable *> connect;
+  int trigger = -1;
+  Term*ptr = NULL;
 };
 
 #endif

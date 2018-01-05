@@ -1,262 +1,257 @@
 #ifndef PARSER_H
 #define PARSER_H
 #include <string>
-#include <typeinfo>
 using std::string;
-
 #include "term.h"
-#include "number.h"
 #include "atom.h"
 #include "variable.h"
-#include "global.h"
-#include "scanner.h"
 #include "struct.h"
 #include "list.h"
+#include "global.h"
+#include "number.h"
+#include "scanner.h"
 #include "node.h"
+#include <sstream>
+#include <iostream>
 
-#include "utParser.h"
-
-class Parser{
+using namespace std;
+class Parser {
 public:
-  Parser(Scanner scanner) : _scanner(scanner), _terms(){}
+	Parser(Scanner scanner) : _scanner(scanner) {}
+	vector<Term*> terms;
+	vector<Term*> reverseterms;
+	vector<Node*> syntaxtree;
+	Term* originalcreateTerm(){
+		string token = _scanner.nextToken();
+		if (token != "Error") {
+			if (islower(token[0]) || isSpecialCh(token[0])) {
+				if (_scanner.lookforward() == "(") {
+					vector<Term*>temp;
+					while (_scanner.lookforward() != ")" && _scanner.lookforward() != ";") {
+						Term*wanttopush = originalcreateTerm();
+						if (wanttopush != NULL)
+							temp.push_back(wanttopush);
+					}
+					if(_scanner.lookforward() == ";")
+						throw string("Unbalanced operator");
+					return new Struct(Atom(token), temp);
+				}
+				else if(!isSpecialCh(token[0]))
+					return new Atom(token);
+				
+			}
+			else if (isupper(token[0]) || token[0] == '_') {
+				return new Variable(token);
+			}
+			else if (isdigit(token[0])) {
+				stringstream temp(token);
+				double store;
+				temp >> store;
+				return new Number(store);
+			}
+			else if (token == "[") {
+				vector<Term*>temp;
+				while (_scanner.buffersize() > _scanner.position() && _scanner.lookforward() != "]" && _scanner.lookforward() != ";") {
+					Term*wanttopush = originalcreateTerm();
+					if (wanttopush != NULL)
+						temp.push_back(wanttopush);
+				}
+				if(_scanner.lookforward() == ";")
+					throw string("Unbalanced operator");
+				if (_scanner.buffersize() == _scanner.position())
+					throw string("unexpected token");
+				if (_scanner.lookforward() == "]")
+					_scanner.nextToken();
+				return new List(temp);
+			}
+		}
+		return NULL;
+	}
+	Term* createTerm() {
+		string token = _scanner.nextToken();
+		if (token != "Error") {
+			if (islower(token[0]) || isSpecialCh(token[0])) {
+				if (_scanner.lookforward() == "(") {
+					vector<Term*>temp;
+					while (_scanner.lookforward() != ")" && _scanner.lookforward() != ";") {
+						Term*wanttopush = originalcreateTerm();
+						if (wanttopush != NULL)
+							temp.push_back(wanttopush);
+					}
+					if(_scanner.lookforward() == ";")
+						throw string("Unbalanced operator");
+					return new Struct(Atom(token), temp);
+				}
+				else if(!isSpecialCh(token[0]))
+					return new Atom(token);
+				
+			}
+			else if (isupper(token[0]) || token[0] == '_') {
+				return new Variable(token);
+			}
+			else if (isdigit(token[0])) {
+				stringstream temp(token);
+				double store;
+				temp >> store;
+				return new Number(store);
+			}
+			else if (token == "[") {
+				vector<Term*>temp;
+				while (_scanner.buffersize() > _scanner.position() && _scanner.lookforward() != "]" && _scanner.lookforward() != ";") {
+					Term*wanttopush = originalcreateTerm();
+					if (wanttopush != NULL)
+						temp.push_back(wanttopush);
+				}
+				if(_scanner.lookforward() == ";")
+					throw string("Unbalanced operator");
+				if (_scanner.buffersize() == _scanner.position())
+					throw string("unexpected token");
+				if (_scanner.lookforward() == "]")
+					_scanner.nextToken();
+				return new List(temp);
+			}
+			if (token == "," || token == ";" || token == "="||token == ".") {
+				if (token == ",")
+					syntaxtree.push_back(new Node(COMMA));
+				else if (token == ";")
+					syntaxtree.push_back(new Node(SEMICOLON));
+				else if (token == "=")
+					syntaxtree.push_back(new Node(EQUALITY));
+				else if (token == ".")
+				  	syntaxtree.push_back(new Node(DOT));
+			}
+		}
+		return NULL;
+	}
+	void matchings(){
+		int parseposition = 0;
+		while (_scanner.buffersize() > _scanner.position()) {
+			Term*wanttopush = createTerm();
+			if (wanttopush != NULL)
+				terms.push_back(wanttopush);
+			for (Node* temp : syntaxtree) {
+				if (temp->payload == EQUALITY) {
+					if (parseposition < terms.size() && temp->left == nullptr) {
+						temp->left = new Node(TERM, terms[parseposition]);
+						parseposition++;
+					}
+					if (parseposition < terms.size() && temp->right == nullptr) {
+						temp->right = new Node(TERM, terms[parseposition]);
+						parseposition++;
+					}
+				}
+			}
+		}
 
-  Term* createTerm(){
-    int token = _scanner.nextToken();
-    _currentToken = token;
-    if(token == VAR){
-      return new Variable(symtable[_scanner.tokenValue()].first);
-    }else if(token == NUMBER){
-      return new Number(_scanner.tokenValue());
-    }else if(token == ATOM || token == ATOMSC){
-      Atom* atom = new Atom(symtable[_scanner.tokenValue()].first);
-      if(_scanner.currentChar() == '(' ) {
-        return structure();
-      }
-      else
-        return atom;
-    }
-    else if(token == '['){
-      return list();
-    }
-    return nullptr;
-  }
-
-  Term * structure() {
-    Atom structName = Atom(symtable[_scanner.tokenValue()].first);
-    int startIndexOfStructArgs = _terms.size();
-    _scanner.nextToken();
-    createTerms();
-    if(_currentToken == ')')
-    {
-      vector<Term *> args(_terms.begin() + startIndexOfStructArgs, _terms.end());
-      _terms.erase(_terms.begin() + startIndexOfStructArgs, _terms.end());
-      return new Struct(structName, args);
-    } else {
-      throw string("unexpected token");
-    }
-  }
-
-  Term * list() {
-    int startIndexOfListArgs = _terms.size();
-    createTerms();
-    if(_currentToken == ']')
-    {
-      vector<Term *> args(_terms.begin() + startIndexOfListArgs, _terms.end());
-      _terms.erase(_terms.begin() + startIndexOfListArgs, _terms.end());
-      return new List(args);
-    } else {
-      throw string("unexpected token");
-    }
-  }
-  vector<Term *> & getTerms() {
-    return _terms;
-  }
-
-  void matchings (){
-    createTerms(); 
-    createNode ();
-    createNodeofRealation();
-  }
-  void createNode (){
-    int EqualityCounter= 0;
-    int SymbolofNode;
-    vector<Node*> nodeofTerms ;
-    for(int i = 0 ; i< _terms.size();i++){
-      nodeofTerms.push_back(new Node(TERM,_terms[i],0,0));      
-    }    
-    for(int i = 0 ; i< _operation.size() ;i++){
-      switch (_operation[i]){
-        case ';': _nodeofOperation.push_back(new  Node (SEMICOLON));break;
-        case ',':_nodeofOperation.push_back(new  Node (COMMA)); break;
-        case '=': _nodeofOperation.push_back(new Node (EQUALITY , 0 , nodeofTerms[EqualityCounter],nodeofTerms[EqualityCounter+1])); 
-        EqualityCounter +=2;
-        break;
-        default :break;
-      }
-    }    
-  }
-
-  void createNodeofRealation(){
-    for(int i = 0 ; i< _operation.size() ;i++){
-      if(_operation[i] == ',' || _operation[i] == ';' ){
-        _nodeofOperation[i]->setchild(_nodeofOperation[i-1],_nodeofOperation[i+1]);
-        for(int j = i+1 ; j<_operation.size()  ; j++){
-          if(_operation[j]==','  || _operation[j] == ';'){
-            _nodeofOperation[i]->setchild(_nodeofOperation[i-1],_nodeofOperation[j]);
-            break;
-          }
-        }
-      }
-    }
-    setRoot();
-    matchingSameVariable();
-  }
-
-  void matchingSameVariable(){    
-    vector <Term* > blockofVariableAndStruct ;
-    recursive_inorder(_tree,blockofVariableAndStruct);   
-  }
-  void matchVariabletoNestedStruct(Struct* parm_Struct ,Term*  goalofVariable){
-    Variable* variableofparmStruct ;
-    Struct * nestedofStruct;
-    
-    for(int z = 0  ; z < parm_Struct->arity() ; z++){           
-      if (variableofparmStruct = dynamic_cast<Variable*>(parm_Struct->args(z))) {
-        if(variableofparmStruct->symbol() == goalofVariable->symbol()){
-          variableofparmStruct->match(*goalofVariable) ;
-        }
-      }
-      else if(nestedofStruct =  dynamic_cast<Struct*>(parm_Struct->args(z)) ){
-         matchVariabletoNestedStruct(nestedofStruct,goalofVariable);
-      }
-    }
-  }
-
-  void recursive_inorder(Node *here , vector<Term*> & v)
-  {
-    if(here != NULL)
-    {
-      if(here->left != NULL && here->right != NULL && here->payload != SEMICOLON){
-        recursive_inorder(here->left ,v);
-        recursive_inorder(here->right,v);          
-      }       
-      if( here->term != 0 ){
-        Variable * varb= dynamic_cast<Variable*>(here->term);
-        Struct * Stru= dynamic_cast<Struct*>(here->term);
-        if(varb)
-          v.push_back(here->term);                       
-        else if(Stru)
-          v.push_back(here->term);                       
-      }
-      for(int i = 0 ; i<v.size() ; i++){
-        for(int j = 0 ; j<v.size() ; j++){
-          Struct* transStruct = dynamic_cast<Struct*>(v[j]);
-          if(transStruct && i != j){
-            matchVariabletoNestedStruct(transStruct ,v[i] );
-          }
-          if(v[i]->symbol() == v[j]->symbol() && i != j){        
-            v[i]->match(*v[j]);  
-            v.erase(v.begin()+ j);      
-          }        
-        }
-      }
-      //下方為Struct的遞迴
-      if(here->left != NULL && here->right != NULL && here->payload == SEMICOLON){
-        recursive_inorderToNodeofSEMICOLON(here ,v );
-        matchInorderResult(v);
-      }
-    }
-  }
-
-  void matchInorderResult (vector <Term*> v ){
-    for(int i = 0 ; i<v.size() ; i++){
-      for(int j = 0 ; j<v.size() ; j++){
-        Struct* transStruct = dynamic_cast<Struct*>(v[j]);
-        if(transStruct && i != j){
-          matchVariabletoNestedStruct(transStruct ,v[i] );
-        }
-        if(v[i]->symbol() == v[j]->symbol() && i != j){
-          v[i]->match(*v[j]);  
-          v.erase(v.begin()+ j);      
-        }        
-      }
-    }
-  }
-  void recursive_inorderToNodeofSEMICOLON(Node *here , vector<Term*> & v){
-    if(here != NULL)
-    {
-      if(here->left != NULL && here->right != NULL && here->payload == SEMICOLON){
-        vector<Term*> v2 = {};
-        recursive_inorder(here->left ,v);
-        recursive_inorder(here->right,v2);          
-        for(int i = 0 ; i< v2.size() ; i++){
-          for(int j = 0 ; j < v2.size() ; j++){
-            Struct* transStruct = dynamic_cast<Struct*>(v2[j]);
-            if(transStruct && i != j){
-              matchVariabletoNestedStruct(transStruct ,v2[i] );
-            }
-            if(v2[i]->symbol() == v2[j]->symbol() && i != j){          
-              v2[i]->match(*v2[j]);  
-              v2.erase(v2.begin()+ j);      
-            }        
-          }
-        }  
-      }    
-     
-    }
-  }
-  
-  Node * expressionTree(){
-    // setRoot();
-    return _tree; 
-  }
-  void setRoot(){
-    _tree = _nodeofOperation[0];
-    bool setcount = 0;    
-    for(int i = 0 ; i < _operation.size() ; i++){
-      if (_operation[i] ==';'){
-        if(setcount !=  1){
-          _tree = _nodeofOperation[i];          
-        }
-        setcount = 1 ;         
-      }
-      else if(_operation[i] ==','){
-        if(setcount !=  1){
-          _tree = _nodeofOperation[i];          
-        }
-        setcount = 1 ;   
-      }      
-      else if(setcount == 0){
-        _tree = _nodeofOperation[i];
-      }
-    }
-  }
+		if(syntaxtree.size() > 0 && syntaxtree[syntaxtree.size() - 1]->payload == DOT){
+			for (int i =  syntaxtree.size() - 1 ; i >= 0 ; i--) {
+				if(syntaxtree.size()!=1){
+					vector<Node*>::iterator fortemplate = syntaxtree.begin();
+					if(syntaxtree[i]->payload == COMMA ) {
+						if(syntaxtree[i + 1]->payload == DOT){
+							if(syntaxtree[i]->payload == COMMA)
+								throw string("Unexpected ',' before '.'");
+						}
+						else if(i >= 1 && syntaxtree[i - 1]->payload == DOT){
+							if(syntaxtree[i]->payload == COMMA)
+								throw string("Unexpected ',' after '.'");
+						}
+						if(syntaxtree[i-1]->payload == EQUALITY && syntaxtree[i+1]->payload == EQUALITY)
+						{
+							syntaxtree[i]->left = syntaxtree[i - 1];
+							syntaxtree[i]->right = syntaxtree[i + 1];
+							syntaxtree.erase(fortemplate + i - 1);
+							syntaxtree.erase(fortemplate + i );
+							i--;
+						}
+					}
+				}
+			}
+		}
 
 
-
+		if(syntaxtree.size() > 0 && syntaxtree[syntaxtree.size() - 1]->payload == DOT){
+			for (int i =  syntaxtree.size() - 1 ; i >= 0 ; i--) {
+				if(syntaxtree.size()!=1){
+					vector<Node*>::iterator fortemplate = syntaxtree.begin();
+					if(syntaxtree[i]->payload != EQUALITY && syntaxtree[i]->payload != DOT && syntaxtree[i]->left == nullptr && syntaxtree[i]->right == nullptr) {
+						if(syntaxtree[i + 1]->payload == DOT){
+							if(syntaxtree[i]->payload == COMMA)
+								throw string("Unexpected ',' before '.'");
+							else if(syntaxtree[i]->payload == SEMICOLON)
+								throw string("Unexpected ';' before '.'");
+						}
+						else if(i >= 1 && syntaxtree[i - 1]->payload == DOT){
+							if(syntaxtree[i]->payload == COMMA)
+								throw string("Unexpected ',' after '.'");
+							else if(syntaxtree[i]->payload == SEMICOLON)
+								throw string("Unexpected ';' after '.'");
+						}
+						syntaxtree[i]->left = syntaxtree[i - 1];
+						syntaxtree[i]->right = syntaxtree[i + 1];
+						syntaxtree.erase(fortemplate + i - 1);
+						syntaxtree.erase(fortemplate + i );
+						i--;
+					}
+				}
+			}
+		}
+		else if(syntaxtree.size() > 0 && syntaxtree[syntaxtree.size() - 1]->payload != DOT)
+			throw string("Missing token '.'");
+		duplicate();
+	}
+	bool buildExpression(){
+		matchings();
+		return expressionTree()->evaluate();
+	  }
+	Node* expressionTree() {
+		if(syntaxtree[0]->payload == DOT)
+			throw string(terms[0]->symbol() + " does never get assignment");
+		return syntaxtree[0];
+	}
+	void duplicate() {
+		vector<Term*>::iterator it = terms.begin();
+		for (int i = 0; i < terms.size(); i++)
+			for (int j = i + 1; j < terms.size(); j++) {
+				if (terms[i]->symbol() == terms[j]->symbol() && terms[i]->type == "Variable" && terms[j]->type == "Variable") {
+					(dynamic_cast<Variable*>(terms[j]))->match(*(terms[i]));
+				}
+				else if(terms[i]->type == "Struct" && terms[j]->type == "Variable" && terms[i]->symbol().find(terms[j]->symbol()) != string::npos){
+					findthevariable(terms[i] , terms[j]);
+				}
+				else if(terms[i]->type == "Variable" && terms[j]->type == "Struct" && terms[j]->symbol().find(terms[i]->symbol()) != string::npos){
+					findthevariable(terms[j] , terms[i]);
+				}
+			}
+	}
+	void createTerms(){
+		int parseposition = 0;
+		while (_scanner.buffersize() > _scanner.position()) {
+			Term*wanttopush = createTerm();
+			if (wanttopush != NULL)
+				terms.push_back(wanttopush);
+		}
+	}
+	void findthevariable(Term*temp , Term*temp2){;
+		for(Term * timelimit : dynamic_cast<Struct*>(temp)->_args){
+			if(timelimit->symbol() == temp2->symbol())
+				(dynamic_cast<Variable*>(timelimit))->match(*(temp2));
+			else if(timelimit->symbol().find(temp2->symbol()) > 0 && (timelimit->type == "Struct" || timelimit->type == "List")){
+				findthevariable(timelimit , temp2);
+			}
+		}
+	}
+	vector<Term*> getTerms() {
+		return terms;
+	}
+	int findthefirstsameterm(int parseposition) {
+		for (int i = 0; i < terms.size(); i++){
+			if (terms[i]->symbol() == terms[parseposition]->symbol())
+				return i;
+		}
+	}
 private:
-  FRIEND_TEST(ParserTest, createArgs);
-  FRIEND_TEST(ParserTest,ListOfTermsEmpty);
-  FRIEND_TEST(ParserTest,listofTermsTwoNumber);
-  FRIEND_TEST(ParserTest, createTerm_nestedStruct3);
+	Scanner _scanner;
 
-  void createTerms() {
-    Term* term = createTerm();
-    if(term!=nullptr)
-    {
-      _terms.push_back(term);
-      while((_currentToken = _scanner.nextToken()) == ',' || _currentToken == '=' ||_currentToken == ';') {
-        _operation.push_back((_currentToken));
-        _terms.push_back(createTerm());
-      }
-    }
-  }
-
-  Node * _tree ;
-  vector<Term *> _terms;
-  vector<int> _operation;
-  vector<Node*> _nodeofOperation;
-  Scanner _scanner;
-  int _currentToken;
 };
 #endif

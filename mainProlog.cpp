@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include "utIterator.h"
+#include "utException.h"
+#include "utExpression.h"
 int main(int argc, char **argv)
 {
 	testing::InitGoogleTest(&argc, argv);

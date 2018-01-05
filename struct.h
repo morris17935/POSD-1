@@ -2,52 +2,66 @@
 #define STRUCT_H
 
 #include "atom.h"
+#include "term.h"
 #include <vector>
 #include <string>
 
-using std::string;
+using namespace std;
 
-class Struct: public Term {
+class Struct :public Term
+{
 public:
-  Struct(Atom name, std::vector<Term *> args): _name(name) {
-    _args = args;
-  }
+	Struct(Atom const &name, vector<Term *> args) : _args(args), _name(name){ type = "Struct"; }
 
-  Term * args(int index) {
-    return _args[index];
-  }
-  int arity(){
-    return _args.size();
-  }
+	template <class Type>
+	bool match(Type &compare) {
+		if (compare.type != "Struct")
+		{
+			return false;
+		}
+		else {
+			return value() == compare.value();
+		}
+	}
+	Atom name() {
+		return _name;
+	}
+	Term * args(int index) {
+		return _args[index];
+	}
 
-  Atom & name() {
-    return _name;
-  }
-  string symbol() const {
-    if(_args.empty()){
-      return _name.symbol() + "()";
-    }
-    string ret = _name.symbol() + "(";
-    std::vector<Term *>::const_iterator it = _args.begin();
-    for (; it != _args.end()-1; ++it)
-      ret += (*it)->symbol()+", ";
-    ret  += (*it)->symbol()+")";
-    return ret;
-  }
-  string value() const {
-    string ret = _name.symbol() + "(";
-    std::vector<Term *>::const_iterator it = _args.begin();
-    for (; it != _args.end()-1; ++it)
-      ret += (*it)->value()+", ";
-    ret  += (*it)->value()+")";
-    return ret;
-  }
-  Iterator <Term*>* createIterator();
-  Iterator <Term*>* createDFSIterator();
-  Iterator <Term*>* createBFSIterator();
+	string symbol() {
+		_symbol = _name.symbol() + "(";
+		if (_args.size() > 0) {
+			for (int i = 0; i < _args.size() - 1; i++) {
+				_symbol = _symbol + _args[i]->symbol() + ", ";
+			}
+			_symbol = _symbol + _args[_args.size() - 1]->symbol() + ")";
+		}
+		else
+			_symbol = _symbol + ")";
+		return _symbol;
+	}
+	string value() {
+		_value = _name.symbol() + "(";
+		for (int i = 0; i < _args.size() - 1; i++) {
+			if(_args[i]->value() == "")
+				_value =  _value + _args[i]->symbol() + ", ";
+			else {
+				_value = _value + _args[i]->value() + ", ";
+			}
+		}
+		if (_args[_args.size() - 1]->value() == "")
+			_value = _value + _args[_args.size() - 1]->symbol() + ")";
+		else
+			_value = _value + _args[_args.size() - 1]->value() + ")";
+		return _value;
+	}
+	int arity() { return _args.size(); }
+std::vector<Term *> _args;
 private:
-  Atom _name;
-  std::vector<Term *> _args;
+	Atom _name;
+
 };
 
 #endif
